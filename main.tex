@@ -1,4 +1,4 @@
-\documentclass[12pt,a4paper,fontset=none]{ctexart}
+\documentclass[12pt,a4paper,fontset=fandol]{ctexart}
 
 \usepackage{geometry}
 \usepackage{graphicx}
@@ -7,6 +7,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage{fontspec}
 
 \geometry{
   top=25mm,
@@ -23,9 +24,8 @@
   pdfborder={0 0 0}
 }
 
-\setCJKmainfont{Songti SC}
-\setCJKsansfont{Heiti SC}
-\setmainfont{Times New Roman}
+\setmainfont{TeX Gyre Termes}
+
 \renewcommand{\arraystretch}{1.25}
 
 \definecolor{ZJUBlue}{HTML}{003C7D}
@@ -50,11 +50,11 @@
 
   \makebox[92mm][c]{\includegraphics[width=92mm]{figures/logo.png}}
 
-  \vspace{10mm}
+  \vspace{6mm}
 
-  {\sffamily\bfseries\fontsize{30pt}{42pt}\selectfont
+  {\sffamily\bfseries\fontsize{28pt}{38pt}\selectfont
   软件工程\par
-  需求分析报告\par}
+  需求分析书\par}
 
   \vspace{14mm}
 
@@ -75,13 +75,14 @@
 
 \input{chapters/01-introduction}
 \input{chapters/02-overview}
-\input{chapters/03-business-process}
-\input{chapters/04-functional-requirements}
-\input{chapters/05-non-functional-requirements}
-\input{chapters/06-external-interfaces}
-\input{chapters/07-data-requirements}
-\input{chapters/08-prototype-ui}
-\input{chapters/09-acceptance}
-\input{chapters/appendix}
+\input{chapters/03-user-scenarios}
+\input{chapters/04-data-flow-diagram}
+\input{chapters/05-state-diagram}
+\input{chapters/06-crc-cards}
+\input{chapters/07-class-diagram}
+\input{chapters/08-data-dictionary}
+\input{chapters/09-ui-design}
+\input{chapters/10-acceptance-criteria}
+\input{chapters/11-environment-spec}
 
 \end{document}

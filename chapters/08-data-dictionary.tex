@@ -1,0 +1,57 @@
+\section{数据词典}
+
+\subsection{数据流定义表}
+
+{\small
+\begin{longtable}{|p{28mm}|p{54mm}|p{38mm}|p{26mm}|}
+\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明} \\
+\hline
+登录请求 & 用户名、密码 & 用户端到服务端 & 用于身份校验 \\
+\hline
+领养申请 & 用户信息、动物信息、申请说明 & 用户端到服务端 & 用于提交领养意向 \\
+\hline
+\end{longtable}
+}
+
+\subsection{数据元素定义表}
+
+{\small
+\begin{longtable}{|p{28mm}|p{30mm}|p{24mm}|p{28mm}|p{36mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明} \\
+\hline
+用户姓名 & 字符串 & 1--20 & 非空 & 用户显示名称 \\
+\hline
+手机号 & 字符串 & 11 & 格式校验 & 联系方式 \\
+\hline
+\end{longtable}
+}
+
+\subsection{外部项/子系统定义表}
+
+{\small
+\begin{longtable}{|p{28mm}|p{90mm}|}
+\hline
+\textbf{名称} & \textbf{说明} \\
+\hline
+用户端 & 面向普通用户的访问入口。 \\
+\hline
+管理员端 & 面向管理员的后台入口。 \\
+\hline
+\end{longtable}
+}
+
+\subsection{数据精度定义表}
+
+{\small
+\begin{longtable}{|p{28mm}|p{90mm}|}
+\hline
+\textbf{项目} & \textbf{要求} \\
+\hline
+时间精度 & 记录到秒级。 \\
+\hline
+数值精度 & 货币与统计类数据按需要保留小数位。 \\
+\hline
+\end{longtable}
+}
