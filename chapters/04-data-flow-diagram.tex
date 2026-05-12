@@ -1,31 +1,36 @@
-\section{数据流图}
-
 \subsection{顶层数据流图}
-
-描述系统整体与外部实体之间的数据交换关系。
+\begin{figure}[H] % 使用 H 强制固定位置
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/04_top.png}
+  \caption{顶层数据流图}
+\end{figure}
 
 \subsection{中层数据流图}
-
-描述关键处理过程、数据存储与主要数据流向。
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/04_mid.png}
+  \caption{中层数据流图}
+\end{figure}
 
 \subsection{底层数据流图}
 
-\subsubsection{登录处理}
+\subsubsection{EEG数据解析与格式校验}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{figures/04_bottom1.png}
+  \caption{EEG数据解析与格式校验流程}
+\end{figure}
 
-描述用户登录相关数据流。
+\subsubsection{自动质控与异常检测}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{figures/04_bottom2.png}
+  \caption{自动质控与异常检测流程}
+\end{figure}
 
-\subsubsection{修改个人信息}
-
-描述个人信息修改相关数据流。
-
-\subsubsection{编辑动物信息}
-
-描述动物信息编辑相关数据流。
-
-\subsubsection{领养申请}
-
-描述领养申请提交与审核相关数据流。
-
-\subsubsection{动物地图}
-
-描述地图查询与展示相关数据流。
+\subsubsection{伦理审批与数据脱敏}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{figures/04_bottom3.png}
+  \caption{伦理审批与数据脱敏流程}
+\end{figure}
