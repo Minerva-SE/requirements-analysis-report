@@ -1,61 +1,632 @@
-\section{用户场景}
+﻿\section{用户场景}
 
 \subsection{用例图}
 
-放置系统总体用例图，并说明主要参与者与系统边界。
-
 \subsubsection{基础信息模块用例图}
+这里展示基于不同角色的基础业务和账户维度的行为，细化了注册、信息管理等延展用例。
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth]
+        \tikzstyle{actor}=[circle, draw, minimum size=0.8cm, align=center]
+        \tikzstyle{usecase}=[rectangle, draw, minimum width=3.5cm, minimum height=0.8cm, align=center]
+        \tikzstyle{detail}=[rectangle, rounded corners, draw, minimum width=2.5cm, minimum height=0.8cm, align=center]
 
-说明登录后可访问的基础信息相关用例。
+        % Actors
+        \node[actor] (all) at (-4, 1.5) {普通角色};
+        \node[actor] (admin) at (-4, -3) {管理员};
 
-\subsubsection{动物领养申请模块用例图}
+        % Use Cases
+        \node[usecase] (login) at (1.5, 4) {注册和登录};
+        \node[usecase] (edit) at (1.5, 2.5) {修改个人信息};
+        \node[usecase] (viewData) at (1.5, 1) {查看前台业务信息};
+        \node[usecase] (viewList) at (1.5, -0.5) {查看资源申请记录};
+        \node[usecase] (board) at (1.5, -2) {使用Dashboard地图};
+        \node[usecase] (auditUser) at (1.5, -3.5) {管理审核用户信息};
+        \node[usecase] (auditData) at (1.5, -5) {管理审核业务数据};
 
-说明领养申请、审核与结果通知相关用例。
+        % Details
+        \node[detail] (login1) at (7.5, 4.7) {表单密码登录};
+        \node[detail] (login2) at (7.5, 3.3) {新用户注册};
+        \node[detail] (edit1) at (7.5, 3) {用户状态};
+        \node[detail] (edit2) at (7.5, 2) {详细联系信息};
+        
+        \node[detail] (auditU1) at (7.5, -2.5) {用户条件判定};
+        \node[detail] (auditU2) at (7.5, -3.5) {用户编辑信息};
+        
+        \node[detail] (auditD1) at (7.5, -4.5) {发布新项目};
+        \node[detail] (auditD2) at (7.5, -5.5) {审核申请与授权};
 
-\subsubsection{动物地图定位模块用例图}
+        % Connections
+        \draw[->] (all) -- (login.west);
+        \draw[->] (all) -- (edit.west);
+        \draw[->] (all) -- (viewData.west);
+        \draw[->] (all) -- (viewList.west);
+        \draw[->] (admin) -- (viewData.west);
+        \draw[->] (admin) -- (viewList.west);
+        \draw[->] (admin) -- (board.west);
+        \draw[->] (admin) -- (auditUser.west);
+        \draw[->] (admin) -- (auditData.west);
 
-说明地图定位、浏览和交互相关用例。
+        \draw[->, dashed] (login.east) -- (login1.west);
+        \draw[->, dashed] (login.east) -- (login2.west);
+        \draw[->, dashed] (edit.east) -- (edit1.west);
+        \draw[->, dashed] (edit.east) -- (edit2.west);
+        \draw[->, dashed] (auditUser.east) -- (auditU1.west);
+        \draw[->, dashed] (auditUser.east) -- (auditU2.west);
+        \draw[->, dashed] (auditData.east) -- (auditD1.west);
+        \draw[->, dashed] (auditData.east) -- (auditD2.west);
+    \end{tikzpicture}
+    \caption{基础信息模块用例图}
+\end{figure}
 
+\subsubsection{EEG 实验与申请模块用例图}
+此用例图展示实验员和管理员在业务实验流转、资源关联和申请下发上的交互细节。
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth]
+        \tikzstyle{actor}=[circle, draw, minimum size=0.8cm, align=center]
+        \tikzstyle{usecase}=[rectangle, draw, minimum width=3.5cm, minimum height=0.8cm, align=center]
+        \tikzstyle{detail}=[rectangle, rounded corners, draw, minimum width=2.5cm, minimum height=0.8cm, align=center]
+
+        \node[actor] (admin) at (-4, 2) {管理员};
+        \node[actor] (researcher) at (-4, -2.5) {实验员};
+
+        \node[usecase] (exp_create) at (1.5, 3.5) {发布实验及相关信息};
+        \node[usecase] (exp_audit) at (1.5, 1.5) {审核申请与数据};
+        \node[usecase] (exp_notify) at (1.5, -0.5) {通知联系参与用户};
+        
+        \node[usecase] (data_upload) at (1.5, -2) {提供参与及授权证明};
+        \node[usecase] (data_view) at (1.5, -3.5) {查看可用业务信息};
+        \node[usecase] (data_apply) at (1.5, -5) {发起数据流转申请};
+
+        \node[detail] (exp1) at (7.5, 4.2) {实验实体信息};
+        \node[detail] (exp2) at (7.5, 2.8) {操作及上传指南};
+        
+        \node[detail] (view1) at (7.5, -2.8) {使用规范与指南};
+        \node[detail] (view2) at (7.5, -4.2) {详细脑电项目信息};
+
+        \draw[->] (admin) -- (exp_create.west);
+        \draw[->] (admin) -- (exp_audit.west);
+        \draw[->] (admin) -- (exp_notify.west);
+
+        \draw[->] (researcher) -- (data_upload.west);
+        \draw[->] (researcher) -- (data_view.west);
+        \draw[->] (researcher) -- (data_apply.west);
+
+        \draw[->, dashed] (exp_create.east) -- (exp1.west);
+        \draw[->, dashed] (exp_create.east) -- (exp2.west);
+
+        \draw[->, dashed] (data_view.east) -- (view1.west);
+        \draw[->, dashed] (data_view.east) -- (view2.west);
+    \end{tikzpicture}
+    \caption{EEG 实验与申请模块用例图}
+\end{figure}
+
+\subsubsection{数据仓储定位模块用例图}
+此部分从系统底层的池边界展示物理及记录层面操作的颗粒度，引入了系统边界框的表达层级。
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth]
+        \tikzstyle{actor}=[circle, draw, minimum size=0.8cm, align=center]
+        \tikzstyle{usecase}=[rectangle, draw, minimum width=3.5cm, minimum height=0.8cm, align=center]
+        \tikzstyle{detail}=[rectangle, rounded corners, draw, minimum width=2.5cm, minimum height=0.8cm, align=center]
+
+        \node[actor] (admin) at (-4, 2) {管理员};
+        \node[actor] (researcher) at (-4, -2) {普通角色};
+
+        % Boundary box for System
+        \draw[rounded corners=15pt, draw=black] (-1, 4.5) rectangle (4.5, -4.5);
+        \node at (1.75, 5) {数据分析仓储中心};
+
+        \node[usecase] (create_eeg) at (1.75, 2.5) {新建实验数据记录};
+        \node[usecase] (upload_eeg) at (1.75, 0) {上传实测波形分析图};
+        \node[usecase] (update_eeg) at (1.75, -2.5) {更新关联及归档定位};
+
+        \node[detail] (info) at (8, 2.5) {业务主体记录};
+        \node[detail] (file) at (8, -2.5) {底层物理及云定位};
+
+        \draw[->] (admin) -- (create_eeg.west);
+        \draw[->] (admin) -- (upload_eeg.west);
+        \draw[->] (admin) -- (update_eeg.west);
+        
+        \draw[->] (researcher) -- (create_eeg.west);
+        \draw[->] (researcher) -- (upload_eeg.west);
+        \draw[->] (researcher) -- (update_eeg.west);
+
+        \draw[->, dashed] (create_eeg.east) -- (info.west);
+        \draw[->, dashed] (update_eeg.east) -- (file.west);
+    \end{tikzpicture}
+    \caption{数据仓储定位模块用例图}
+\end{figure}
 \subsection{功能列表}
+
+下表列出系统前半部分的核心四大模块概览。
+
+\begin{table}[H]
+    \centering
+    \caption{功能模块汇总表}
+    \resizebox{\textwidth}{!}{
+    \begin{tabular}{|c|l|l|p{4cm}|p{2cm}|p{2cm}|}
+        \hline
+        \textbf{编号} & \textbf{名称} & \textbf{使用角色} & \textbf{功能说明} & \textbf{输入} & \textbf{输出} \\
+        \hline
+        1 & 登录/登出模块 & 所有角色 & 处理用户注册、登录授权及信息查看。 & 账号,密码,验证码 & Token令牌,用户状态 \\
+        \hline
+        2 & EEG 实验管理 & 实验员, 管理员 & 实验项目生命周期管理。 & 实验基本信息,被试者说明 & 实验列表,详情记录 \\
+        \hline
+        3 & EEG 数据管理 & 实验员, 管理员 & 原始及处理后数据的上传、预览与维护。 & EEG数据文件,标签信息 & 数据列表,文件下载流 \\
+        \hline
+        4 & 首页 Dashboard & 所有角色 & 根据角色聚合数据的面板信息展示。 & 无（或日期过滤） & 统计图表,系统通知 \\
+        \hline
+    \end{tabular}}
+\end{table}
 
 \subsubsection{用户注册}
 
-说明注册流程、输入字段和结果反馈。
+\textbf{描述及优先级}
+
+被试者、实验员可以在系统首页申请并注册账号，提交注册信息给系统，系统验证后分配相应的基础权限或转入管理员待审批列表（针对实验员）。
+优先级：极高（系统基础功能，必须实现）
+
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.8) node[below] {用户端};
+        \draw[thick] (6, 0) -- (6, -4.8) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.8) node[below] {数据库};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 提交注册表单(账号,密码,角色)};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 查询账号是否已存在};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 返回唯一性校验结果};
+        \draw[->] (6, -3.0) -- (12, -3.0) node[midway, above] {4. 写入新用户数据};
+        \draw[<-] (0, -3.8) -- (6, -3.8) node[midway, above] {5. 返回注册成功状态并跳转};
+    \end{tikzpicture}
+    \caption{用户注册请求响应时序图}
+\end{figure}
+
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 用户注册 \\
+        \hline
+        \textbf{主要参与者} & 被试者 / 实验员 \\
+        \hline
+        \textbf{目标} & 用户完成系统账号注册 \\
+        \hline
+        \textbf{前提条件} & 无 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 用户点击界面注册按钮，跳转至注册页
+            \item 输入邮箱/账号、密码并选择对应的注册角色
+            \item 提交后系统验证账号唯一性和密码复杂性
+            \item 系统记录新用户并提示注册成功
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 用户在登录页点击“注册新账号” \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 账号（邮箱）已被注册
+            \item 密码不符合安全策略
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 必须实现 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsubsection{用户登录}
 
-说明登录流程、身份校验和失败处理。
+\textbf{描述及优先级}
 
-\subsubsection{个人信息}
+注册成功的用户（或管理员）通过账号和密码登录平台。登录成功后，系统分发身份 Token 令牌，并根据角色不同路由至被试者中心、实验员工作台或管理员控制台。
+优先级：极高（系统基础功能，必须实现）
 
-说明个人资料查看与修改功能。
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.0) node[below] {用户端};
+        \draw[thick] (6, 0) -- (6, -4.0) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.0) node[below] {数据库};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 提交凭证(账号和密码)};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 查询比对加密密码与状态};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 返回验证通过与用户信息};
+        \draw[<-] (0, -3.0) -- (6, -3.0) node[midway, above] {4. 颁发Token并返回页面授权};
+    \end{tikzpicture}
+    \caption{用户登录请求响应时序图}
+\end{figure}
 
-\subsubsection{动物详细信息}
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 用户登录 \\
+        \hline
+        \textbf{主要参与者} & 平台所有角色 \\
+        \hline
+        \textbf{目标} & 验证身份并进入系统功能流 \\
+        \hline
+        \textbf{前提条件} & 用户已完成注册并且账号未被冻结或处在待审状态 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 在系统首页输入账号与密码
+            \item 后端进行凭证安全校验与角色判定
+            \item 生成登录日志(login\_log)并签发Token
+            \item 跳转至对应角色的Dashboard
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 访问受限页面或手动输入凭证 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 账号不存在或密码错误
+            \item 实验员账号尚未被管理员审核通过
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 必须实现 \\
+        \hline
+    \end{tabular}
+\end{table}
 
-说明动物详情查看功能。
+\subsubsection{个人信息查看与修改}
 
-\subsubsection{动物领养申请与审批}
+\textbf{描述及优先级}
 
-说明提交申请与后台审批流程。
+供用户查看并修改个人的基础信息，如联系邮箱、真实姓名以用来绑定知情同意书和审核身份等，支持密码修改。
+优先级：中（支撑功能）
 
-\subsubsection{动物领养指南}
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.8) node[below] {用户端};
+        \draw[thick] (6, 0) -- (6, -4.8) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.8) node[below] {数据库};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 请求展示个人信息};
+        \draw[<-] (0, -1.4) -- (6, -1.4) node[midway, above] {2. 返回当前用户配置};
+        \draw[->] (0, -2.2) -- (6, -2.2) node[midway, above] {3. 提交修改后的个人字段数据};
+        \draw[->] (6, -3.0) -- (12, -3.0) node[midway, above] {4. Update对应记录};
+        \draw[<-] (0, -3.8) -- (6, -3.8) node[midway, above] {5. 提示修改并保存成功};
+    \end{tikzpicture}
+    \caption{个人信息修改请求响应时序图}
+\end{figure}
 
-说明领养说明、指引和帮助内容。
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 个人信息维护 \\
+        \hline
+        \textbf{主要参与者} & 平台所有角色 \\
+        \hline
+        \textbf{目标} & 维护个人的基本信息与安全设置 \\
+        \hline
+        \textbf{前提条件} & 用户已登录系统 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 用户点击右上角“个人中心”
+            \item 系统加载该用户的配置与身份认证状态
+            \item 用户修改姓名或更新密码并点击提交
+            \item 数据库更新，前端弹出成功通知
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 点击修改资料或更改密码按钮 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 网段异常导致信息未能同步
+            \item 修改密码时原密码输入错误
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 需视情况实现 \\
+        \hline
+    \end{tabular}
+\end{table}
 
-\subsubsection{动物地图}
+\subsubsection{创建 EEG 实验}
 
-说明地图浏览与定位功能。
+\textbf{描述及优先级}
 
-\subsubsection{动物识图}
+实验员可以建立一个新的EEG实验项目，作为相关EEG数据的聚合集合。这使得后续的数据上传、申请与伦理授权可以基于具体的实验发生。
+优先级：极高（核心业务链路）
 
-说明识图检索和结果展示功能。
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.8) node[below] {实验员};
+        \draw[thick] (6, 0) -- (6, -4.8) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.8) node[below] {数据库};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 提交新实验(名称,目的,被试要求)};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 创建 experiment 表记录};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 返回新建生成的实验ID};
+        \draw[->] (6, -3.0) -- (12, -3.0) node[midway, above] {4. 写入操作审计日志};
+        \draw[<-] (0, -3.8) -- (6, -3.8) node[midway, above] {5. UI反馈“实验创建成功”};
+    \end{tikzpicture}
+    \caption{创建EEG实验请求响应时序图}
+\end{figure}
 
-\subsection{IPO 图}
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 创建 EEG 实验项目 \\
+        \hline
+        \textbf{主要参与者} & 实验员 \\
+        \hline
+        \textbf{目标} & 初始化数据的顶层集合容器以便归档信息 \\
+        \hline
+        \textbf{前提条件} & 实验员已登录且具备创建资质 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 进入“实验管理”模块，点击新建实验
+            \item 录入实验元数据（描述，项目编号，预计被试数量）
+            \item 系统持久化到数据库并绑定创建者
+            \item 跳转到该实验的详情列表，可准备上传数据
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 实验员点击创建项目按钮 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 必填项缺失导致后端拒绝响应
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 必须实现 \\
+        \hline
+    \end{tabular}
+\end{table}
 
-\subsubsection{用户端}
+\subsubsection{归档 EEG 实验}
 
-说明用户端输入、处理和输出。
+\textbf{描述及优先级}
 
-\subsubsection{管理员端}
+在实验结束后，实验员或管理员可以将实验设为归档状态。归档后，该实验下不允许再上传新数据，且相关数据被保护不被随便修改。
+优先级：中（生命周期管理）
 
-说明管理员端输入、处理和输出。
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.0) node[below] {实验员};
+        \draw[thick] (6, 0) -- (6, -4.0) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.0) node[below] {数据库};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 触发归档当前实验ID请求};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 更新 experiment 表状态为 Archived};
+        \draw[->] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 联动冻结其相关的数据修改权限};
+        \draw[<-] (0, -3.0) -- (6, -3.0) node[midway, above] {4. 通知前端并刷新状态};
+    \end{tikzpicture}
+    \caption{归档EEG实验请求响应时序图}
+\end{figure}
+
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 归档旧项目实验 \\
+        \hline
+        \textbf{主要参与者} & 实验员 / 管理员 \\
+        \hline
+        \textbf{目标} & 封存实验数据防止在研究结束后的意外篡改 \\
+        \hline
+        \textbf{前提条件} & 该实验项目由当前操作人创建或有管理员权限 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 在实验列表定位到目标实验
+            \item 点击“归档”，经过二次弹窗确认
+            \item 系统变更数据行状态，释放相关活跃资源
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 人工在详情页进行归档操作 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 当前实验仍有未处理完成的解析/AI任务，阻止归档
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 建议实现 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{上传 EEG 数据文件}
+
+\textbf{描述及优先级}
+
+数据管理模块的核心动作，实验员为特定被试上传测量的原始EEG文件（如.edf, .bdf等）。需要强关联被试的知情同意证明。
+优先级：极高（系统的立足点）
+
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.8) node[below] {实验员};
+        \draw[thick] (6, 0) -- (6, -4.8) node[below] {后端API};
+        \draw[thick] (12, 0) -- (12, -4.8) node[below] {对象存储/DB};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 分片上传文件流及关联记录};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 系统写入本地/云存储};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 响应存储路径};
+        \draw[->] (6, -3.0) -- (12, -3.0) node[midway, above] {4. 生成eeg字段及排入解析队列};
+        \draw[<-] (0, -3.8) -- (6, -3.8) node[midway, above] {5. UI提示文件处理中};
+    \end{tikzpicture}
+    \caption{上传EEG数据文件请求响应时序图}
+\end{figure}
+
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 上传采集的原始 EEG 数据 \\
+        \hline
+        \textbf{主要参与者} & 实验员 \\
+        \hline
+        \textbf{目标} & 将物理设备采集到的数据纳入统一监管和解析机制 \\
+        \hline
+        \textbf{前提条件} & 隶属某个已存在的实验，并具有被试人员的电子知情同意 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 选择实验，在数据面板点击上传
+            \item 绑定当前数据所属的“Subject被试者”
+            \item 选择本地文件流上传（检查后端配置的大小及格式限制）
+            \item 系统入库记录后分配给异步任务解析模块流转
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 录入文件数据时触发 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 文件超过系统配置的最大限制(System Config)
+            \item 格式不属于系统允许配置列表
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 必须实现 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{查看数据详情与下载}
+
+\textbf{描述及优先级}
+
+在数据管理列表中，相关人员可进入详情页查看文件参数（采样率、通道数）、下载源文件或处理好的派生文件，以进入后续独立工具进行自处理。
+优先级：高（科研数据流出机制）
+
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.0) node[below] {实验员/审批者};
+        \draw[thick] (6, 0) -- (6, -4.0) node[below] {系统后端};
+        \draw[thick] (12, 0) -- (12, -4.0) node[below] {文件存储};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 请求下载/预览特定EEG记录};
+        \draw[->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 校验伦理授权是否通过\&提取物理路径};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 返回凭证临时URL或二进制流};
+        \draw[<-] (0, -3.0) -- (6, -3.0) node[midway, above] {4. 推送数据流至浏览器下载};
+    \end{tikzpicture}
+    \caption{查看与下载EEG数据请求响应时序图}
+\end{figure}
+
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 数据详情检索与下载导出 \\
+        \hline
+        \textbf{主要参与者} & 实验员 / 管理员 \\
+        \hline
+        \textbf{目标} & 获取合规的可用于分析和存储的数据文件 \\
+        \hline
+        \textbf{前提条件} & 针对当前用户的数据使用申请已得到管理员/被试的双重授权 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 进入数据条目的详情页
+            \item 浏览通道质量报告和数据头段解析结果
+            \item 点击导出/下载，后端拦截校验授权时效
+            \item 授权无误则输出文件供本地机器使用
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 点击下载链接或数据详情图标 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 文件已被归档冻结或授权被撤回，报403 Forbidden
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 必须实现 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{查看 Dashboard 面板}
+
+\textbf{描述及优先级}
+
+登录系统后默认跳转的聚合首页面板。系统会根据角色类型计算指标：针对管理员展示待办审批量、实验员展示个人项目进度及上传数据量、被试展示数据隐私授权提醒。
+优先级：中（增强交互性与待办提示）
+
+\textbf{主要流程请求/响应时序图}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=stealth, font=\small]
+        \draw[thick] (0, 0) -- (0, -4.0) node[below] {用户};
+        \draw[thick] (6, 0) -- (6, -4.0) node[below] {系统后端聚合器};
+        \draw[thick] (12, 0) -- (12, -4.0) node[below] {各模块DB};
+        
+        \draw[->] (0, -0.6) -- (6, -0.6) node[midway, above] {1. 请求控制面板 /api/dashboard };
+        \draw[<->] (6, -1.4) -- (12, -1.4) node[midway, above] {2. 并发拉取通知、实验计数状态统计};
+        \draw[<-] (6, -2.2) -- (12, -2.2) node[midway, above] {3. 返回多表联查聚合结果};
+        \draw[<-] (0, -3.0) -- (6, -3.0) node[midway, above] {4. 渲染图表可视化与待办事项};
+    \end{tikzpicture}
+    \caption{Dashboard首页数据请求响应时序图}
+\end{figure}
+
+\textbf{用例}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 生成并查看角色化 Dashboard \\
+        \hline
+        \textbf{主要参与者} & 平台所有角色 \\
+        \hline
+        \textbf{目标} & 作为系统的首页入口快速导流任务 \\
+        \hline
+        \textbf{前提条件} & 登录系统成功 \\
+        \hline
+        \textbf{工作流程} & 
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 后端根据访问令牌中的Role属性计算相应的统计指标
+            \item 前端基于收到的数据，使用图形库渲染
+            \item 当有待审批或新的通知时，在快捷面板凸显提示红点
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{触发器} & 访问跟路由(/)时自动触发展示 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 后端计算统计负荷高造成暂时的面板超时(采取降级显示)
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 建议实现 \\
+        \hline
+    \end{tabular}
+\end{table}
