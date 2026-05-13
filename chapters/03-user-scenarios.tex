@@ -648,33 +648,51 @@
 
 \textbf{用例}
 
-\begin{longtable}{|p{34mm}|p{112mm}|}
-\hline
-用例 & 生成 EEG 数据质控报告 \\
-\hline
-主要参与者 & 实验员 \\
-\hline
-目标 & 在 EEG 数据上传后自动完成解析和质控，生成可供管理员审核的数据质量依据。 \\
-\hline
-前提条件 & 实验员已登录；实验存在且未归档；被试者已签署有效知情同意；上传文件格式在系统配置允许范围内。 \\
-\hline
-工作流程 & 实验员上传 EEG 文件；系统保存文件并创建处理任务；处理模块解析文件；系统执行格式、通道、缺失值和异常值检查；系统生成质控报告；实验员查看处理状态和报告结果。 \\
-\hline
-拓展点 & 可扩展更多质控规则，如噪声阈值、采样率一致性、异常片段标记和自动修复建议。 \\
-\hline
-触发器 & EEG 数据上传成功。 \\
-\hline
-异常 & 文件格式不支持；文件损坏；通道信息缺失；处理任务超时；质控结果不通过。 \\
-\hline
-优先级 & 高 \\
-\hline
-使用频率 & 高频，每次上传 EEG 数据都会触发。 \\
-\hline
-使用方式 & 后台自动执行，前端通过任务状态和报告页面查看结果。 \\
-\hline
-次要参与者 & 管理员、数据处理模块、文件存储服务 \\
-\hline
-\end{longtable}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 生成 EEG 数据质控报告 \\
+        \hline
+        \textbf{主要参与者} & 实验员 \\
+        \hline
+        \textbf{目标} & 在 EEG 数据上传后自动完成解析和质控，生成可供管理员审核的数据质量依据。 \\
+        \hline
+        \textbf{前提条件} & 实验员已登录；实验存在且未归档；被试者已签署有效知情同意；上传文件格式在系统配置允许范围内。 \\
+        \hline
+        \textbf{工作流程} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 实验员上传 EEG 文件
+            \item 系统保存文件并创建处理任务
+            \item 处理模块解析文件并执行格式、通道、缺失值和异常值检查
+            \item 系统生成质控报告
+            \item 实验员查看处理状态和报告结果
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{拓展点} & 可扩展更多质控规则，如噪声阈值、采样率一致性、异常片段标记和自动修复建议。 \\
+        \hline
+        \textbf{触发器} & EEG 数据上传成功。 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 文件格式不支持或文件损坏
+            \item 通道信息缺失
+            \item 处理任务超时
+            \item 质控结果不通过
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 高 \\
+        \hline
+        \textbf{使用频率} & 高频，每次上传 EEG 数据都会触发。 \\
+        \hline
+        \textbf{使用方式} & 后台自动执行，前端通过任务状态和报告页面查看结果。 \\
+        \hline
+        \textbf{次要参与者} & 管理员、数据处理模块、文件存储服务 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsubsection{被试者撤回授权}
 
@@ -693,33 +711,50 @@
 
 \textbf{用例}
 
-\begin{longtable}{|p{34mm}|p{112mm}|}
-\hline
-用例 & 授权撤回 \\
-\hline
-主要参与者 & 被试者 \\
-\hline
-目标 & 允许被试者撤回本人 EEG 数据的后续使用授权，保护个人数据权益。 \\
-\hline
-前提条件 & 被试者已登录；存在与本人相关的有效授权；授权状态允许撤回。 \\
-\hline
-工作流程 & 被试者进入我的授权页；系统展示授权列表；被试者选择需要撤回的授权；系统校验撤回条件；系统更新授权状态；系统通知相关实验员并记录日志。 \\
-\hline
-拓展点 & 可扩展撤回原因填写、撤回后影响范围提示、历史授权记录导出。 \\
-\hline
-触发器 & 被试者主动点击撤回授权。 \\
-\hline
-异常 & 授权不存在；授权已失效；授权不允许撤回；撤回后仍有进行中任务需要人工处理。 \\
-\hline
-优先级 & 高 \\
-\hline
-使用频率 & 低频，但合规价值高。 \\
-\hline
-使用方式 & 被试者在我的授权页手动操作。 \\
-\hline
-次要参与者 & 实验员、管理员、通知服务、日志服务 \\
-\hline
-\end{longtable}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 授权撤回 \\
+        \hline
+        \textbf{主要参与者} & 被试者 \\
+        \hline
+        \textbf{目标} & 允许被试者撤回本人 EEG 数据的后续使用授权，保护个人数据权益。 \\
+        \hline
+        \textbf{前提条件} & 被试者已登录；存在与本人相关的有效授权；授权状态允许撤回。 \\
+        \hline
+        \textbf{工作流程} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 被试者进入我的授权页
+            \item 系统展示授权列表
+            \item 被试者选择需要撤回的授权
+            \item 系统校验撤回条件并更新授权状态
+            \item 系统通知相关实验员并记录日志
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{拓展点} & 可扩展撤回原因填写、撤回后影响范围提示、历史授权记录导出。 \\
+        \hline
+        \textbf{触发器} & 被试者主动点击撤回授权。 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 授权不存在或已失效
+            \item 授权不允许撤回
+            \item 撤回后仍有进行中任务需要人工处理
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 高 \\
+        \hline
+        \textbf{使用频率} & 低频，但合规价值高。 \\
+        \hline
+        \textbf{使用方式} & 被试者在我的授权页手动操作。 \\
+        \hline
+        \textbf{次要参与者} & 实验员、管理员、通知服务、日志服务 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsubsection{AI 执行 EEG 分析}
 
@@ -738,33 +773,52 @@
 
 \textbf{用例}
 
-\begin{longtable}{|p{34mm}|p{112mm}|}
-\hline
-用例 & AI 执行 EEG 分析 \\
-\hline
-主要参与者 & 实验员 \\
-\hline
-目标 & 对已授权且质量合格的 EEG 数据执行 AI 状态识别分析。 \\
-\hline
-前提条件 & 实验员已登录；数据已审核通过；数据未冻结、未归档；实验员拥有有效授权；分析所需数据视图或派生数据存在。 \\
-\hline
-工作流程 & 实验员选择 EEG 数据；选择 AI 状态识别分析类型和参数；系统校验权限和数据状态；系统创建分析任务；分析模块执行特征提取和状态识别；实验员查看图表和识别结论。 \\
-\hline
-拓展点 & 可扩展更多特征提取算法、批量分析、模型版本管理和分析参数模板。 \\
-\hline
-触发器 & 实验员在分析页面点击开始分析。 \\
-\hline
-异常 & 无数据授权；数据质控失败；派生数据不存在；分析任务失败；算法服务不可用。 \\
-\hline
-优先级 & 高 \\
-\hline
-使用频率 & 中高频，发生在数据审核和授权通过之后。 \\
-\hline
-使用方式 & 实验员在 AI 状态识别页面发起。 \\
-\hline
-次要参与者 & 权限服务、分析任务服务、数据分析模块 \\
-\hline
-\end{longtable}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & AI 执行 EEG 分析 \\
+        \hline
+        \textbf{主要参与者} & 实验员 \\
+        \hline
+        \textbf{目标} & 对已授权且质量合格的 EEG 数据执行 AI 状态识别分析。 \\
+        \hline
+        \textbf{前提条件} & 实验员已登录；数据已审核通过；数据未冻结、未归档；实验员拥有有效授权；分析所需数据视图或派生数据存在。 \\
+        \hline
+        \textbf{工作流程} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 实验员选择 EEG 数据
+            \item 选择 AI 状态识别分析类型和参数
+            \item 系统校验权限和数据状态
+            \item 系统创建分析任务
+            \item 分析模块执行特征提取和状态识别
+            \item 实验员查看图表和识别结论
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{拓展点} & 可扩展更多特征提取算法、批量分析、模型版本管理和分析参数模板。 \\
+        \hline
+        \textbf{触发器} & 实验员在分析页面点击开始分析。 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 无数据授权或数据质控失败
+            \item 派生数据不存在
+            \item 分析任务失败
+            \item 算法服务不可用
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 高 \\
+        \hline
+        \textbf{使用频率} & 中高频，发生在数据审核和授权通过之后。 \\
+        \hline
+        \textbf{使用方式} & 实验员在 AI 状态识别页面发起。 \\
+        \hline
+        \textbf{次要参与者} & 权限服务、分析任务服务、数据分析模块 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsubsection{维护系统配置}
 
@@ -783,33 +837,52 @@
 
 \textbf{用例}
 
-\begin{longtable}{|p{34mm}|p{112mm}|}
-\hline
-用例 & 维护系统配置 \\
-\hline
-主要参与者 & 管理员 \\
-\hline
-目标 & 统一维护系统运行参数，使登录、上传、处理、导出和日志保留等规则可配置。 \\
-\hline
-前提条件 & 管理员已登录；管理员拥有系统配置维护权限；配置项存在且允许修改。 \\
-\hline
-工作流程 & 管理员进入系统配置页；系统展示配置列表；管理员修改配置值；系统校验格式和权限；系统保存配置并记录日志；系统返回生效结果。 \\
-\hline
-拓展点 & 可扩展配置版本管理、配置回滚、配置变更审批和配置生效范围提示。 \\
-\hline
-触发器 & 管理员需要调整系统运行规则。 \\
-\hline
-异常 & 配置值格式错误；配置项不可修改；管理员权限不足；保存失败；配置冲突。 \\
-\hline
-优先级 & 中 \\
-\hline
-使用频率 & 低频，通常在系统初始化或规则调整时使用。 \\
-\hline
-使用方式 & 管理员在系统配置页面手动维护。 \\
-\hline
-次要参与者 & 权限服务、日志服务、数据库 \\
-\hline
-\end{longtable}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|p{3cm}|p{11.5cm}|}
+        \hline
+        \textbf{用例} & 维护系统配置 \\
+        \hline
+        \textbf{主要参与者} & 管理员 \\
+        \hline
+        \textbf{目标} & 统一维护系统运行参数，使登录、上传、处理、导出和日志保留等规则可配置。 \\
+        \hline
+        \textbf{前提条件} & 管理员已登录；管理员拥有系统配置维护权限；配置项存在且允许修改。 \\
+        \hline
+        \textbf{工作流程} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 管理员进入系统配置页
+            \item 系统展示配置列表
+            \item 管理员修改配置值
+            \item 系统校验格式和权限
+            \item 系统保存配置并记录日志
+            \item 系统返回生效结果
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{拓展点} & 可扩展配置版本管理、配置回滚、配置变更审批和配置生效范围提示。 \\
+        \hline
+        \textbf{触发器} & 管理员需要调整系统运行规则。 \\
+        \hline
+        \textbf{异常} &
+        \vspace{-0.3cm}
+        \begin{itemize}
+            \item 配置值格式错误或配置项不可修改
+            \item 管理员权限不足
+            \item 保存失败
+            \item 配置冲突
+        \end{itemize} \vspace{-0.3cm} \\
+        \hline
+        \textbf{优先级} & 中 \\
+        \hline
+        \textbf{使用频率} & 低频，通常在系统初始化或规则调整时使用。 \\
+        \hline
+        \textbf{使用方式} & 管理员在系统配置页面手动维护。 \\
+        \hline
+        \textbf{次要参与者} & 权限服务、日志服务、数据库 \\
+        \hline
+    \end{tabular}
+\end{table}
 
 \subsection{IPO 图}
 
