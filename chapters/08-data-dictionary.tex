@@ -1,57 +1,428 @@
 \section{数据词典}
 
-\subsection{数据流定义表}
+\subsection{说明}
+
+本章给出系统数据流、数据元素、数据存储和外部项的集中定义，与数据流图、类图两章互为对照。数据元素采用``中文名（english\_name）''双重命名以便于和代码字段对齐；类型参照 PostgreSQL，用 \texttt{UUID}、\texttt{varchar(n)}、\texttt{text}、\texttt{integer}、\texttt{float}、\texttt{boolean}、\texttt{datetime}、\texttt{json} 表示。组成列中 ``+'' 表示顺序连接，``\{\}'' 表示重复，``[\,|\,]'' 表示二选一。
+
+\subsection{数据流定义}
+\label{sec:dd-flow}
+
+按数据流图顶层、中层、底层分三层列出主要数据流。
+
+\subsubsection{顶层}
+
+加工 P0 为``EEG 数据管理与科研伦理审核系统''，外部项为被试者、实验员、管理员。
 
 {\small
-\begin{longtable}{|p{28mm}|p{54mm}|p{38mm}|p{26mm}|}
+\begin{longtable}{|p{26mm}|p{48mm}|p{26mm}|p{28mm}|}
 \hline
-\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明} \\
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endfirsthead
 \hline
-登录请求 & 用户名、密码 & 用户端到服务端 & 用于身份校验 \\
-\hline
-领养申请 & 用户信息、动物信息、申请说明 & 用户端到服务端 & 用于提交领养意向 \\
-\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endhead
+注册信息/知情同意签署 & 角色 + 手机号 + 密码 + 验证码 + 模板版本 + 签署时间 & 被试者 $\to$ P0 & 注册并完成知情同意 \\ \hline
+撤回授权申请 & 授权 ID + 撤回原因 & 被试者 $\to$ P0 & 撤回已有授权 \\ \hline
+授权/处理状态通知 & 通知类型 + 标题 + 内容 + 关联对象 & P0 $\to$ 被试者 & 审批、处理进度的站内通知 \\ \hline
+实验元数据/EEG 原始文件 & 实验编号 + 名称 + 被试者 ID + 原始文件 + 采样率 + 通道信息 & 实验员 $\to$ P0 & 建立实验并上传 EEG \\ \hline
+数据使用申请 & 数据 ID + 使用目的 + 访问范围 + 导出格式 & 实验员 $\to$ P0 & 提交数据使用申请 \\ \hline
+质控报告/AI 分析结果 & 数据 ID + 质控指标 + 分析类型 + 结果 JSON & P0 $\to$ 实验员 & 处理与分析产出 \\ \hline
+用户/数据审批指令 & 对象类型 + 对象 ID + 审批结果 + 审批意见 & 管理员 $\to$ P0 & 审批用户、审核数据、批复申请 \\ \hline
+系统配置参数 & 配置键 + 新值 & 管理员 $\to$ P0 & 修改上传上限、Token 有效期等 \\ \hline
+异常告警/审计日志 & 操作人 + 操作类型 + 对象 + 结果 + 时间 & P0 $\to$ 管理员 & 操作日志与系统异常 \\ \hline
 \end{longtable}
 }
 
-\subsection{数据元素定义表}
+\subsubsection{中层}
+
+中层将 P0 分解为 P1 用户与权限管理、P2 实验与数据管理、P3 数据解析与质控、P4 伦理审核与授权、P5 数据分析与 AI，并引入 D1 用户库、D2 实验库、D3 伦理授权库、D4 任务结果库。
 
 {\small
-\begin{longtable}{|p{28mm}|p{30mm}|p{24mm}|p{28mm}|p{36mm}|}
+\begin{longtable}{|p{26mm}|p{48mm}|p{26mm}|p{28mm}|}
 \hline
-\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明} \\
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endfirsthead
 \hline
-用户姓名 & 字符串 & 1--20 & 非空 & 用户显示名称 \\
-\hline
-手机号 & 字符串 & 11 & 格式校验 & 联系方式 \\
-\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endhead
+鉴权令牌（Token）& Token + 用户 ID + 角色 & P1 $\to$ P2 & 其他加工据此识别身份 \\ \hline
+管理权限上下文 & 管理员 ID + 权限范围 & P1 $\to$ P4 & 管理员操作时的权限上下文传递 \\ \hline
+提交伦理审核请求 & 用户/数据信息 + 待审核项 & P2 $\to$ P4 & 数据进入待审核 \\ \hline
+发布审核结果 & 对象 ID + 审核结果 + 意见 & 管理员 $\to$ P4 & 管理员审核决定 \\ \hline
+上传 EEG 文件 & 文件内容 + 文件元信息 & 实验员 $\to$ P2 & 实验员上传原始数据 \\ \hline
+原始数据流 & 文件句柄 + 元数据 & P2 $\to$ P3 & 数据进入解析与质控 \\ \hline
+审核通过信号 & 数据 ID + 通过标记 & P4 $\to$ P5 & 审批通过后允许下游使用 \\ \hline
+脱敏特征数据 & 处理后数据 + 统计摘要 & D4 $\to$ P5 & 供分析使用 \\ \hline
+推送最终报告 & 分析结果 + 报告附件 & P5 $\to$ 实验员 & 分析完成后返回 \\ \hline
 \end{longtable}
 }
 
-\subsection{外部项/子系统定义表}
+\subsubsection{底层}
+
+\paragraph{P3.1 EEG 数据解析与格式校验}
 
 {\small
-\begin{longtable}{|p{28mm}|p{90mm}|}
+\begin{longtable}{|p{28mm}|p{52mm}|p{30mm}|p{22mm}|}
 \hline
-\textbf{名称} & \textbf{说明} \\
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endfirsthead
 \hline
-用户端 & 面向普通用户的访问入口。 \\
-\hline
-管理员端 & 面向管理员的后台入口。 \\
-\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endhead
+二进制原始流 & 原始文件字节流 & D2 $\to$ P3.1.1 & 取原始 EEG 文件 \\ \hline
+元数据（硬件信息）& 设备型号 + 采样率 + 记录时长 & P3.1.1 $\to$ P3.1.2 & 文件头提取结果 \\ \hline
+导联配置 & 通道名列表 + 参考电极 & P3.1.2 $\to$ P3.1.3 & 对齐后的通道表 \\ \hline
+校验通过信号 & 校验结果 + 错误说明 & P3.1.3 $\to$ P3.1.4 & 采样率一致性检测结果 \\ \hline
+标准化 .set/.fdt 文件 & 规范化后文件路径 + 校验和 & P3.1.4 $\to$ D4 & 写入任务结果库 \\ \hline
 \end{longtable}
 }
 
-\subsection{数据精度定义表}
+\paragraph{P3.3 自动质控与异常检测}
 
 {\small
-\begin{longtable}{|p{28mm}|p{90mm}|}
+\begin{longtable}{|p{28mm}|p{52mm}|p{30mm}|p{22mm}|}
 \hline
-\textbf{项目} & \textbf{要求} \\
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endfirsthead
 \hline
-时间精度 & 记录到秒级。 \\
-\hline
-数值精度 & 货币与统计类数据按需要保留小数位。 \\
-\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endhead
+时间序列数据 & 各通道采样序列 & D4 $\to$ P3.3.1 & 从标准化数据取输入 \\ \hline
+插值建议 & 坏道索引 + 插值方式 & P3.3.1 $\to$ P3.3.2 & 坏道自动识别结果 \\ \hline
+伪迹占比 & 伪迹时长/总时长 & P3.3.2 $\to$ P3.3.3 & 评估指标 \\ \hline
+综合评分 & 信噪比 + 伪迹占比 + 坏道数 & P3.3.3 $\to$ P3.3.4 & 汇总评分 \\ \hline
+QC 标签 & 伪迹类别 + 区间 + 质控结论 & P3.3.4 $\to$ D4 & 质控结果回写标准化数据 \\ \hline
+PDF 质控预览 & 报告文件 URL & P3.3.4 $\to$ 实验员 & 可下载的质控报告 \\ \hline
 \end{longtable}
 }
+
+\paragraph{P4 伦理审批与数据脱敏}
+
+{\small
+\begin{longtable}{|p{28mm}|p{52mm}|p{30mm}|p{22mm}|}
+\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据流} & \textbf{组成} & \textbf{流向} & \textbf{说明}\\\hline
+\endhead
+知情签署记录 & 签署人 + 模板版本 + 签署时间 & 被试者 $\to$ P4.1 & 签署知情同意书 \\ \hline
+项目伦理编号 & 伦理审批编号 & D3 $\to$ P4.1 & 用于比对模板版本 \\ \hline
+验证合规 & 比对结果 + 说明 & P4.1 $\to$ P4.2 & 合规通过进入脱敏 \\ \hline
+已脱敏数据 & 去标识化后的数据 & P4.2 $\to$ P4.3 & 隐私字段剔除 \\ \hline
+审批确认 & 审批人 + 审批意见 & 管理员 $\to$ P4.3 & 管理员放行授权令牌颁发 \\ \hline
+下载链接/API Key & 临时 URL 或 API Key + 有效期 & P4.3 $\to$ 申请人/研究员 & 颁发访问凭证 \\ \hline
+\end{longtable}
+}
+
+\subsection{数据元素定义}
+\label{sec:dd-element}
+
+按归属实体分组列出关键数据元素，全局枚举在~\ref{sec:dd-enum}~节集中定义。
+
+\subsubsection{用户与认证}
+
+{\small
+\begin{longtable}{|p{32mm}|p{20mm}|p{16mm}|p{24mm}|p{42mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endhead
+用户 ID（user\_id）& UUID & 36 & 主键 & 系统内用户编号 \\ \hline
+用户名（username）& varchar & --- & 唯一、不可重复 & 登录名 \\ \hline
+手机号（phone）& varchar & --- & 唯一 & 中国大陆手机号 \\ \hline
+邮箱（email）& varchar & --- & 可选 & 联系邮箱 \\ \hline
+密码哈希（password\_hash）& varchar & --- & 非空 & 密码不存明文，登录密码 8-16 位 \\ \hline
+角色（role）& varchar & --- & 见表~\ref{tab:dd-enum-role} & 三类角色 \\ \hline
+账号状态（user.status）& varchar & --- & 见表~\ref{tab:dd-enum-user-status} & 生命周期 \\ \hline
+验证码（code）& varchar & 6 & 纯数字 & 短信验证码 \\ \hline
+场景（scene）& varchar & --- & register, login, reset\_\allowbreak password & 区分用途 \\ \hline
+过期时间（expired\_at）& datetime & --- & 非空 & 默认 5 分钟 \\ \hline
+Token & varchar & --- & 非空 & JWT 令牌，默认有效期 30 分钟 \\ \hline
+登录 IP（ip\_address）& varchar & --- & IPv4/IPv6 & 来源地址 \\ \hline
+登录结果（log.result）& varchar & --- & Success/Failed & 成功与否 \\ \hline
+\end{longtable}
+}
+
+\subsubsection{实验与 EEG 数据}
+
+{\small
+\begin{longtable}{|p{32mm}|p{20mm}|p{16mm}|p{24mm}|p{42mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endhead
+实验 ID（experiment\_id）& UUID & 36 & 主键 & experiment 主键 \\ \hline
+实验编号（code）& varchar & --- & 唯一 & 可读编号 \\ \hline
+实验名称（experiment.name）& varchar & --- & 非空 & 展示用 \\ \hline
+实验状态（experiment.status）& varchar & --- & 见表~\ref{tab:dd-enum-exp-status} & 四态流转 \\ \hline
+用途（usage\_type）& varchar & --- & Teaching, Research & 与数据共用 \\ \hline
+EEG 数据 ID（data\_id）& UUID & 36 & 主键 & eeg\_data 主键 \\ \hline
+文件格式（file\_format）& varchar & --- & CSV/EDF & 默认支持格式 \\ \hline
+文件大小（file\_size）& bigint & --- & $\le$上传上限 & 上限默认 200 MB \\ \hline
+存储路径（storage\_path）& varchar & --- & 非空 & 文件存储路径 \\ \hline
+文件校验值（file\_hash）& varchar & 64 & SHA-256 & 完整性 \\ \hline
+采样率（sample\_rate）& integer & --- & $>$0 & Hz，常见 128/256/512 \\ \hline
+通道数（channel\_count）& integer & --- & $>$0 & EEG 通道数 \\ \hline
+通道名称（channel\_names）& json & --- & 数组 & 通道标签列表 \\ \hline
+采集时间（collected\_at）& datetime & --- & 可选 & 数据采集时间 \\ \hline
+生命周期状态（data\_status）& varchar & --- & 见表~\ref{tab:dd-enum-data-lifecycle} & 主状态机 \\ \hline
+处理状态（processing\_status）& varchar & --- & 见表~\ref{tab:dd-enum-task-status} & 异步任务 \\ \hline
+审核状态（review\_status）& varchar & --- & Pending, Approved, Rejected & 管理员审核 \\ \hline
+软删除标记（is\_deleted）& boolean & --- & 默认 false & 逻辑删除 \\ \hline
+标签名称（tag.name）& varchar & --- & 非空 & 用户自定义 \\ \hline
+\end{longtable}
+}
+
+\subsubsection{质控与处理}
+
+{\small
+\begin{longtable}{|p{32mm}|p{20mm}|p{16mm}|p{24mm}|p{42mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endhead
+解析状态（parse\_status）& varchar & --- & Success/Failed & 解析结果 \\ \hline
+缺失比例（missing\_ratio）& float & --- & $[0,1]$ & 缺失值比例 \\ \hline
+异常值数（abnormal\_count）& integer & --- & $\ge$0 & 超出生理范围点数 \\ \hline
+质控结果（quality\_result）& varchar & --- & Passed, Warning, Failed & 总体判定 \\ \hline
+处理建议（suggestion）& text & --- & 可选 & 质控结论的文字说明 \\ \hline
+派生文件路径（derived.file\_path）& varchar & --- & 非空 & 处理后文件位置 \\ \hline
+归一化方法（normalization\_method）& varchar & --- & 可选 & 如 z-score、min-max \\ \hline
+处理配置（processing\_config）& json & --- & 可选 & 参数快照 \\ \hline
+任务类型（task\_type）& varchar & --- & 见表~\ref{tab:dd-enum-task-type} & 五类任务 \\ \hline
+任务状态（task.status）& varchar & --- & 见表~\ref{tab:dd-enum-task-status} & 四态 \\ \hline
+错误信息（error\_message）& text & --- & 失败时非空 & 错误描述 \\ \hline
+\end{longtable}
+}
+
+\subsubsection{伦理审核与权限}
+
+{\small
+\begin{longtable}{|p{32mm}|p{20mm}|p{16mm}|p{24mm}|p{42mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endhead
+模板版本（template.version）& varchar & --- & 语义化 & 如 v1.0.0 \\ \hline
+模板状态（template.status）& varchar & --- & Draft, Active, Disabled & 同时只一个 Active 版本 \\ \hline
+签署状态（consent.status）& varchar & --- & Valid, Revoked & 可撤回 \\ \hline
+使用目的（purpose）& varchar & --- & 非空 & 申请用途 \\ \hline
+访问范围（access\_scope）& varchar & --- & View, Download, Analyze & 可组合 \\ \hline
+申请状态（request.status）& varchar & --- & Pending, Approved, Rejected, Revoked & 全生命周期 \\ \hline
+授权状态（authorization.status）& varchar & --- & 见表~\ref{tab:dd-enum-auth} & 三态 \\ \hline
+授权起止时间（start\_at/end\_at）& datetime & --- & end $\ge$ start & 过期自动失效 \\ \hline
+导出格式（export\_format）& varchar & --- & CSV/JSON 等 & 与申请同步保存 \\ \hline
+撤回原因（revoke\_reason）& text & --- & 撤回时非空 & 知情/授权撤回说明 \\ \hline
+通知类型（notification\_type）& varchar & --- & 审批/审核/申请/撤回 & 分类展示 \\ \hline
+阅读状态（read\_status）& varchar & --- & Read/Unread & 通知状态 \\ \hline
+阅读时间（read\_at）& datetime & --- & 读后非空 & 通知阅读时间 \\ \hline
+操作类型（action）& varchar & --- & 创建/下载/审批等 & 审计字段 \\ \hline
+对象类型（object\_type）& varchar & --- & experiment, eeg\_data 等 & 关联实体 \\ \hline
+操作结果（log.message）& text & --- & 可选 & 失败原因或备注 \\ \hline
+\end{longtable}
+}
+
+\subsubsection{数据分析与配置}
+
+{\small
+\begin{longtable}{|p{32mm}|p{20mm}|p{16mm}|p{24mm}|p{42mm}|}
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{数据元素} & \textbf{类型} & \textbf{长度} & \textbf{约束} & \textbf{说明}\\\hline
+\endhead
+分析类型（analysis\_type）& varchar & --- & 见表~\ref{tab:dd-enum-analysis} & 五类分析 \\ \hline
+分析通道（analysis.channel）& varchar & --- & 单通道 & 如 Fp1 \\ \hline
+分析起止时间（analysis.start/end\_time）& float & --- & 秒 & 时域偏移 \\ \hline
+结果 JSON（result\_json）& json & --- & 非空 & 波形/频谱/分类 \\ \hline
+配置键（config\_key）& varchar & --- & 唯一 & 小数点分层 \\ \hline
+配置值（config\_value）& text & --- & 字符串化 & 按类型解析 \\ \hline
+配置分类（category）& varchar & --- & upload/auth/log/task 等 & 分组展示 \\ \hline
+\end{longtable}
+}
+
+\subsubsection{枚举取值}
+\label{sec:dd-enum}
+
+{\small
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{用户角色} \label{tab:dd-enum-role} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Subject & 被试者 \\ \hline
+Researcher & 实验员 \\ \hline
+Admin & 管理员 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{账号状态} \label{tab:dd-enum-user-status} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Pending & 注册后待审批，不可登录 \\ \hline
+Active & 正常 \\ \hline
+Rejected & 注册被驳回 \\ \hline
+Disabled & 被禁用 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{EEG 数据生命周期} \label{tab:dd-enum-data-lifecycle} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Uploaded & 已上传，未处理 \\ \hline
+Processing & 处理中 \\ \hline
+PendingReview & 等待管理员审核 \\ \hline
+Approved & 审核通过 \\ \hline
+Rejected & 审核拒绝 \\ \hline
+Frozen & 暂停使用，解冻后恢复 \\ \hline
+Archived & 归档终态 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{实验状态} \label{tab:dd-enum-exp-status} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Draft & 草稿 \\ \hline
+Running & 进行中 \\ \hline
+Completed & 已结束 \\ \hline
+Archived & 已归档 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{异步任务状态} \label{tab:dd-enum-task-status} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Pending & 待执行 \\ \hline
+Processing & 执行中 \\ \hline
+Success & 成功 \\ \hline
+Failed & 失败，允许重试 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{处理任务类型} \label{tab:dd-enum-task-type} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Parse & 文件解析 \\ \hline
+QualityCheck & 质控 \\ \hline
+Transform & 通道或结构转换 \\ \hline
+Normalize & 归一化 \\ \hline
+Export & 按授权导出 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{分析类型} \label{tab:dd-enum-analysis} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Waveform & 时域波形 \\ \hline
+Statistics & 均值/方差/峰值等 \\ \hline
+FFT & 频域分析 \\ \hline
+BandPower & 频段能量，如 $\alpha$、$\beta$ \\ \hline
+AIClassify & 状态识别 \\ \hline
+\end{longtable}
+
+\begin{longtable}{|p{28mm}|p{100mm}|}
+\caption{授权与知情同意状态} \label{tab:dd-enum-auth} \\ \hline
+\textbf{取值} & \textbf{说明}\\\hline
+\endfirsthead
+\hline \textbf{取值} & \textbf{说明}\\\hline \endhead
+Valid & 有效 \\ \hline
+Revoked & 已撤回 \\ \hline
+Expired & 已过期 \\ \hline
+\end{longtable}
+}
+
+\subsection{数据存储定义}
+
+按模块列出 20 张数据库表的主要组成与用途。字段以逗号拼接、省略时间戳等公共列。
+
+{\small
+\begin{longtable}{|p{28mm}|p{18mm}|p{76mm}|p{16mm}|}
+\hline
+\textbf{存储} & \textbf{模块} & \textbf{主要组成} & \textbf{访问}\\\hline
+\endfirsthead
+\hline
+\textbf{存储} & \textbf{模块} & \textbf{主要组成} & \textbf{访问}\\\hline
+\endhead
+user & 登录 & id, username, phone, email, password\_hash, role, status & 高 \\ \hline
+verification\_code & 登录 & id, phone, code, scene, expired\_at, used & 高 \\ \hline
+login\_log & 登录 & id, user\_id, login\_type, ip\_address, user\_agent, result, message & 中 \\ \hline
+experiment & 实验 & id, code, name, description, owner\_id, status, usage\_type, start/end\_time & 中 \\ \hline
+eeg\_data & 数据 & id, experiment\_id, subject\_id, consent\_record\_id, uploaded\_by, name, description, file\_name, file\_format, file\_size, storage\_path, file\_hash, sample\_rate, channel\_count, channel\_names, collected\_at, usage\_type, data\_status, processing\_status, review\_status, is\_deleted & 高 \\ \hline
+eeg\_data\_tag & 数据 & id, name, description, color, created\_by & 低 \\ \hline
+eeg\_data\_\allowbreak tag\_\allowbreak relation & 数据 & id, data\_id, tag\_id & 中 \\ \hline
+quality\_report & 质控 & id, data\_id, parse\_status, file\_format, file\_size, sampling\_rate, channel\_count, channels, missing\_ratio, abnormal\_count, quality\_result, suggestion, error\_message & 中 \\ \hline
+processing\_result & 处理 & id, data\_id, status, original\_file\_path, derived\_file\_path, original\_sampling\_rate, processed\_sampling\_rate, original\_channel\_count, processed\_channel\_count, error\_message, started\_at, finished\_at & 中 \\ \hline
+derived\_data & 处理 & id, data\_id, processing\_result\_id, file\_path, file\_format, sample\_rate, channel\_count, channel\_names, normalization\_method, processing\_config & 中 \\ \hline
+processing\_task & 处理 & id, data\_id, task\_type, status, input\_file\_path, output\_file\_path, error\_message, created\_by, started\_at, finished\_at & 高（轮询）\\ \hline
+consent\_template & 伦理 & id, name, version, content, status, effective\_at, created\_by & 低 \\ \hline
+consent\_record & 伦理 & id, subject\_id, template\_id, template\_version, status, signed\_at, revoked\_at, revoke\_reason & 中 \\ \hline
+data\_access\_\allowbreak request & 伦理 & id, data\_id, requester\_id, subject\_id, purpose, description, access\_scope, export\_format, status, review\_opinion, reviewed\_at & 中 \\ \hline
+data\_\allowbreak authorization & 伦理 & id, request\_id, data\_id, subject\_id, authorized\_user\_id, access\_scope, status, start\_at, end\_at, revoked\_at, revoke\_reason & 中 \\ \hline
+notification & 伦理 & id, user\_id, title, content, notification\_type, read\_status, related\_object\_type, related\_object\_id, read\_at & 高 \\ \hline
+operation\_log & 审计 & id, actor\_id, actor\_role, action, object\_type, object\_id, result, message, ip\_address & 写多 \\ \hline
+analysis\_result & 分析 & id, data\_id, analysis\_type, channel, start\_time, end\_time, result\_json, status, error\_message, created\_by & 中 \\ \hline
+analysis\_task & 分析 & id, data\_id, analysis\_type, channels, start\_time, end\_time, status, error\_message, created\_by, started\_at, finished\_at & 高（轮询）\\ \hline
+system\_config & 配置 & id, config\_key, config\_value, category, description, updated\_by & 读多 \\ \hline
+\end{longtable}
+}
+
+除上述数据库表外，系统另设文件存储用于保存 EEG 原始文件与派生数据。\texttt{eeg\_\allowbreak data.storage\_\allowbreak path} 与 \texttt{derived\_\allowbreak data.file\_\allowbreak path} 指向存储中的路径，以 \texttt{file\_\allowbreak hash} 校验完整性，下载通过带有效期的临时签名链接发放。
+
+\subsection{外部项定义}
+
+{\small
+\begin{longtable}{|p{28mm}|p{18mm}|p{88mm}|}
+\hline
+\textbf{名称} & \textbf{类别} & \textbf{说明}\\\hline
+\endfirsthead
+\hline
+\textbf{名称} & \textbf{类别} & \textbf{说明}\\\hline
+\endhead
+被试者 & 角色 & EEG 数据来源主体；查看本人数据与授权，签署或撤回知情同意 \\ \hline
+实验员 & 角色 & 创建实验、上传 EEG、申请使用数据、执行分析与导出 \\ \hline
+管理员 & 角色 & 审批用户、审核数据、批复申请、管理模板、查看日志与维护配置 \\ \hline
+文件存储 & 外部系统 & 保存 EEG 原始文件与派生数据，\texttt{eeg\_\allowbreak data.\allowbreak storage\_\allowbreak path} 与 \texttt{derived\_\allowbreak data.\allowbreak file\_\allowbreak path} 指向该存储的对象路径 \\ \hline
+短信网关 & 外部系统 & 对接发送验证码接口，将 \texttt{verification\_\allowbreak code} 推送至用户手机 \\ \hline
+浏览器客户端 & 外部系统 & 前端运行环境，通过 HTTPS 访问后端 REST API \\ \hline
+\end{longtable}
+}
+
+\subsection{数据精度}
+
+本节规定前端展示与后端存储共用的数据精度，所有涉及数值计算、时间、文件大小的字段在系统内统一遵循下表。
+
+{\small
+\begin{longtable}{|p{30mm}|p{104mm}|}
+\hline
+\textbf{项目} & \textbf{要求}\\\hline
+\endfirsthead
+\hline
+\textbf{项目} & \textbf{要求}\\\hline
+\endhead
+时间精度 & \texttt{datetime} 精确到秒，UTC 存储、按本地时区展示 \\ \hline
+采样率精度 & 整数 Hz；原始与处理后采样率在 \texttt{processing\_\allowbreak result} 中分别保存，不覆盖原值 \\ \hline
+EEG 数值 & 原始按上传格式保留；派生数据用 \texttt{float32}，至少 4 位有效数字 \\ \hline
+频域分析 & FFT 频率分辨率由采样率与窗长决定，展示保留 2 位小数（Hz）\\ \hline
+波段能量 & \texttt{float}，保留 4 位小数，单位 $\mu V^2/Hz$ \\ \hline
+缺失值比例 & 保留 4 位小数，范围 $[0,1]$ \\ \hline
+文件大小 & 字节存储，上限默认 200 MB，按 KB/MB 换算展示 2 位小数 \\ \hline
+ID 与哈希 & 主键采用 36 位 UUID，文件完整性采用 SHA-256（64 位十六进制）\\ \hline
+\end{longtable}
+}
+
