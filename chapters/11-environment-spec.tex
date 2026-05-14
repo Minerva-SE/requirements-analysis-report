@@ -1,17 +1,115 @@
 \section{环境运行规定}
 
+本章规定 Minerva 系统在开发、测试、课程演示和后续部署中的运行环境。系统整体采用前后端分离的 B/S 架构：前端为 Vite + React + TypeScript 单页应用，后端提供 RESTful API，数据持久化层采用关系数据库，EEG 文件由本地文件系统或对象存储保存。课程阶段可使用 mock 数据完成前端闭环演示，后续集成阶段应按 API 规格接入真实后端服务。
+
 \subsection{服务端}
 
-说明服务器操作系统、运行时环境和后端依赖。
+\subsubsection{操作系统与基础软件}
+
+服务端建议运行在 Linux x86\_64 环境，推荐 Ubuntu 22.04 LTS 或同等级稳定发行版。课程演示和本地开发可运行在 macOS 或 Windows 环境，但生产部署应优先选择 Linux 服务器以便统一进程管理、日志采集和安全配置。
+
+\begin{longtable}{|p{34mm}|p{88mm}|}
+\hline
+\textbf{环境项} & \textbf{规定} \\
+\hline
+操作系统 & Ubuntu 22.04 LTS 或兼容 Linux 发行版；开发环境可使用 macOS 或 Windows。 \\
+\hline
+Web 服务 & 前端静态资源可由 Nginx、Vite Preview 或平台静态托管服务提供；生产环境推荐 Nginx。 \\
+\hline
+后端运行时 & 建议使用 Python 3.11 及以上版本，后端框架可采用 Django / Django REST Framework 或同等级 REST 服务框架。 \\
+\hline
+数据库 & 建议使用 PostgreSQL 14 及以上版本；课程轻量演示可使用 SQLite，但正式环境应使用关系数据库保障并发访问和审计查询。 \\
+\hline
+文件存储 & EEG 原始文件、标准化结果和导出报告应存储在服务端文件目录或对象存储中，并在数据库中保存文件路径、哈希和元数据。 \\
+\hline
+网络协议 & 前端通过 HTTPS 访问后端 REST API；本地开发可使用 HTTP。 \\
+\hline
+\end{longtable}
+
+\subsubsection{后端依赖与配置}
+
+后端服务需要提供认证、用户、实验、数据集、质控报告、分析结果、知情同意、访问申请、通知、日志和系统配置等 API。接口统一使用 \texttt{/api/v1} 前缀，认证接口返回 Bearer Token，普通 JSON 请求使用 \texttt{application/json}，数据上传接口使用 \texttt{multipart/form-data}。
+
+后端部署时至少应配置以下运行参数：
+
+\begin{itemize}
+  \item 数据库连接地址、用户名、密码和数据库名称。
+  \item Token 密钥、访问 Token 有效期和刷新策略。
+  \item EEG 文件上传目录、单文件大小上限和允许文件格式。
+  \item 日志保留周期、审计日志写入策略和异常告警方式。
+  \item 跨域访问白名单或同源反向代理规则。
+\end{itemize}
 
 \subsection{设备要求}
 
-说明开发、测试和部署所需的硬件配置。
+\subsubsection{开发设备}
+
+开发人员设备应满足前端构建、后端运行和本地数据库调试的基本需求。推荐配置如下：
+
+\begin{longtable}{|p{38mm}|p{82mm}|}
+\hline
+\textbf{项目} & \textbf{推荐配置} \\
+\hline
+CPU & 四核及以上处理器。 \\
+\hline
+内存 & 8 GB 及以上，推荐 16 GB。 \\
+\hline
+存储 & 至少 10 GB 可用空间，用于依赖、构建产物、样例 EEG 文件和数据库数据。 \\
+\hline
+网络 & 可访问依赖仓库、代码仓库和本地后端服务；课程演示环境需保持稳定局域网或互联网连接。 \\
+\hline
+显示 & 13 英寸及以上显示器，推荐 1440px 及以上横向分辨率以完整展示管理工作台。 \\
+\hline
+\end{longtable}
+
+\subsubsection{服务器设备}
+
+课程演示或小型实验室部署可使用单台服务器。推荐配置为 2 核 CPU、4 GB 内存、40 GB 磁盘空间；若需要保存较多 EEG 原始文件，应根据数据规模扩展存储空间。若后续加入更复杂的 AI 模型推理，可单独配置计算服务，但当前需求范围内不要求 GPU。
 
 \subsection{前端依赖}
 
-说明浏览器版本、前端框架和构建工具。
+当前 Minerva 前端原型采用如下依赖和构建方式：
+
+\begin{longtable}{|p{34mm}|p{88mm}|}
+\hline
+\textbf{依赖项} & \textbf{规定} \\
+\hline
+Node.js & 建议使用 Node.js 20 LTS 或更高 LTS 版本。 \\
+\hline
+包管理器 & 使用 npm，依赖版本以 \texttt{package-lock.json} 为准。 \\
+\hline
+前端框架 & React 19，使用函数组件和 Hooks 管理页面状态。 \\
+\hline
+开发语言 & TypeScript 5，要求通过 \texttt{tsc -b} 类型检查。 \\
+\hline
+构建工具 & Vite 7，开发命令为 \texttt{npm run dev}，生产构建命令为 \texttt{npm run build}，本地预览命令为 \texttt{npm run preview}。 \\
+\hline
+样式方案 & 原生 CSS，统一维护主题变量、布局、表格、表单、状态标签和响应式规则。 \\
+\hline
+本地端口 & 开发服务器默认使用 \texttt{http://localhost:5173/}，后端本地 API 可使用 \texttt{http://localhost:8000/api/v1}。 \\
+\hline
+\end{longtable}
+
+前端构建产物应输出到 \texttt{dist} 目录，可由静态服务器托管。生产环境中，前端不应直接硬编码开发机路径或敏感配置；后端 API 地址、部署域名等环境差异应通过环境变量、反向代理或平台配置管理。
 
 \subsection{客户端}
 
-说明终端设备、分辨率和网络环境要求。
+客户端为普通 Web 浏览器，不需要安装专用桌面软件。推荐运行环境如下：
+
+\begin{longtable}{|p{34mm}|p{88mm}|}
+\hline
+\textbf{客户端项} & \textbf{规定} \\
+\hline
+浏览器 & 推荐 Chrome、Edge、Safari 或 Firefox 的近两年稳定版本。 \\
+\hline
+设备类型 & 桌面端和笔记本电脑为主要使用设备；平板设备可用于浏览和轻量审批；手机端不作为主要数据分析终端。 \\
+\hline
+分辨率 & 推荐宽度 1280px 及以上；系统应在 760px 以上宽度保持主要功能可用，在更窄屏幕下提供纵向布局。 \\
+\hline
+网络 & 能够稳定访问前端站点和后端 API；上传 EEG 文件时应保证连接不中断。 \\
+\hline
+权限 & 浏览器需允许 JavaScript、LocalStorage 和必要的文件选择能力，以支持主题保存、登录状态和数据上传。 \\
+\hline
+\end{longtable}
+
+系统面向教学和基础科研场景，不要求客户端具备 GPU、专业 EEG 软件或 MATLAB 环境。所有核心操作均应通过浏览器完成，避免将数据管理、伦理审批和基础分析流程分散到多个本地工具中。
