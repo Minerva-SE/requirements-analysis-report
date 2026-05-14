@@ -2,18 +2,40 @@
 
 \subsection{核心类}
 
-\begin{longtable}{|p{30mm}|p{82mm}|p{32mm}|}
+\begin{longtable}{|p{38mm}|p{74mm}|p{32mm}|}
 \hline
 \textbf{类名} & \textbf{主要属性/方法} & \textbf{说明} \\
 \hline
-User & id, name, password, login(), updateProfile() & 用户实体类 \\
+Subject & id, name, consentStatus, signConsent(), viewAuth() & 数据来源主体与授权管理入口 \\
 \hline
-Animal & id, name, type, status, showDetail() & 动物实体类 \\
+Researcher & id, name, org, createExperiment(), uploadEEG() & 实验创建、数据上传与分析发起者 \\
 \hline
-AdoptionApp & id, userId, animalId, submit(), approve() & 领养申请类 \\
+admin & id, name, permission, auditData(), manageConfig() & 用户审批、数据审核与系统管理 \\
+\hline
+Experiment & id, title, status, addEEGData(), archive() & 实验聚合与状态流转对象 \\
+\hline
+EEGData & id, filePath, status, parse(), download() & 原始 EEG 文件及其生命周期对象 \\
+\hline
+QualityReport / ProcessingResult & result, issues, summary, generateReport() & 解析、质控与处理后的结果集合 \\
+\hline
+DataAccessRequest / AuthorizationRecord & reason, scope, status, submit(), approve() & 数据申请与授权追踪对象 \\
+\hline
+ConsentRecord & version, signedAt, status, sign(), revoke() & 授权前置条件与签署记录 \\
+\hline
+analysis / AnalysisResult & type, status, metric, runAnalysis(), export() & 波形、统计与 AI 分析过程及输出 \\
+\hline
+Notification / OperationLog & type, message, createdAt, push(), record() & 审批、任务状态与审计记录 \\
 \hline
 \end{longtable}
 
 \subsection{类之间关系}
 
-说明关联、继承、聚合与依赖关系，并配合类图展示。
+\begin{itemize}
+\item 角色类：Subject（被试者）、Researcher（实验员）和 Administrator（管理员）。
+\item 业务对象类：Experiment（实验）、EEG Data（EEG 数据）、Quality Report（质控报告）、Data Access Request（数据使用申请与授权）、Consent Record（知情同意记录）、Analysis（分析任务及结果）以及 OperationLog（操作日志）。
+\end{itemize}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\textwidth]{figures/07_class_diagram.png}
+\end{figure}
