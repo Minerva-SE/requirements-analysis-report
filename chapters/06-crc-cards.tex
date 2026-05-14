@@ -1,17 +1,173 @@
 \section{CRC 卡}
 
-\begin{longtable}{|p{32mm}|p{38mm}|p{68mm}|}
+\subsection{Class 被试者}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{类名} & \textbf{职责} & \textbf{协作者} \\
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
 \hline
-用户 & 管理注册、登录和个人资料。 & 登录服务、个人信息管理类 \\
+注册、登录、退出 & 认证服务 \\
 \hline
-动物信息 & 维护动物详情、状态和展示信息。 & 数据存储类、搜索类 \\
+签署知情同意并管理本人授权 & 知情同意、数据授权 \\
 \hline
-领养申请 & 记录申请、审批与状态变化。 & 用户类、管理员类 \\
+查看我的数据、我的授权与通知 & Dashboard、通知中心 \\
+\hline
+查看实验相关数据概览 & 实验 \\
+\hline
+接收系统消息与审批结果 & 通知 \\
 \hline
 \end{longtable}
 
-\subsection{CRC 说明}
+\subsection{Class 实验员}
 
-对核心类的职责划分进行文字说明，避免职责过多或耦合过强。
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+创建、查看、编辑实验 & 实验 \\
+\hline
+上传 EEG 数据并补充元信息 & EEG 数据、知情同意 \\
+\hline
+申请使用数据并跟踪审批状态 & 数据使用申请、授权记录 \\
+\hline
+查看解析、质控与处理结果 & 质控报告、处理结果 \\
+\hline
+执行基础分析与简单状态识别 & 分析任务、分析结果 \\
+\hline
+导出分析结果 & 分析结果 \\
+\hline
+查看实验相关通知与日志 & 通知、操作日志 \\
+\hline
+\end{longtable}
+
+\subsection{Class 管理员}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+登录、退出后台管理系统 & 认证服务 \\
+\hline
+审批用户并管理角色权限 & 用户、权限管理 \\
+\hline
+审核 EEG 数据与质控结果 & EEG 数据、质控报告 \\
+\hline
+处理数据使用申请与授权撤回 & 数据使用申请、授权记录 \\
+\hline
+维护知情同意模板与签署记录 & 知情同意模板、知情同意 \\
+\hline
+查看日志、通知与异常数据 & 操作日志、通知、异常数据 \\
+\hline
+维护系统配置项 & 系统配置 \\
+\hline
+\end{longtable}
+
+\subsection{Class 实验}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+记录实验基本信息与状态流转 & 实验员、管理员 \\
+\hline
+聚合实验下的 EEG 数据、被试者和申请记录 & EEG 数据、被试者、数据使用申请 \\
+\hline
+提供实验详情页展示所需数据 & Dashboard、前端页面 \\
+\hline
+支持归档与结束状态管理 & 数据生命周期 \\
+\hline
+\end{longtable}
+
+\subsection{Class EEG 数据}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+保存原始文件路径、元信息和标签 & 文件存储、标签 \\
+\hline
+记录上传、下载、修改与归档状态 & 实验员、管理员 \\
+\hline
+触发解析、质控与处理任务 & 数据解析、质控与处理模块 \\
+\hline
+展示详情、列表与下载入口 & 前端页面、Dashboard \\
+\hline
+维持数据生命周期与可用状态 & 数据生命周期 \\
+\hline
+\end{longtable}
+
+\subsection{Class 质控报告 / 处理结果}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+记录格式检查、通道校验与异常值检查结果 & 数据解析、质控与处理任务 \\
+\hline
+保存处理后结果、派生数据与统计摘要 & 派生数据、分析任务 \\
+\hline
+为数据审核提供依据 & 管理员 \\
+\hline
+向实验员展示处理进度与最终结果 & 前端页面、通知 \\
+\hline
+\end{longtable}
+
+\subsection{Class 数据使用申请 / 授权记录}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+保存实验员的数据使用申请 & 实验员 \\
+\hline
+维护审批状态、授权结果与撤回信息 & 管理员、被试者 \\
+\hline
+记录授权范围、有效期与关联数据集 & EEG 数据、实验 \\
+\hline
+驱动通知生成与状态追踪 & 通知、操作日志 \\
+\hline
+\end{longtable}
+
+\subsection{Class 知情同意}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+维护知情同意模板内容 & 管理员、系统配置 \\
+\hline
+记录被试者签署结果、时间与版本号 & 被试者、实验 \\
+\hline
+作为数据上传与授权申请的前置条件 & EEG 数据、数据使用申请 \\
+\hline
+支持签署状态查询与撤回流程 & 通知、操作日志 \\
+\hline
+\end{longtable}
+
+\subsection{Class 分析任务 / 分析结果}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+组织波形、统计、FFT、波段能量和 AI 分类任务 & 数据分析与 AI 模块 \\
+\hline
+保存分析过程、任务状态与结果文件 & 处理结果、派生数据 \\
+\hline
+为导出与可视化提供结果数据 & 前端页面、文件存储 \\
+\hline
+\end{longtable}
+
+\subsection{Class 通知 / 操作日志}
+
+\begin{longtable}{|p{84mm}|p{54mm}|}
+\hline
+\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\hline
+记录关键操作、审批与异常事件 & 所有业务模块 \\
+\hline
+推送审批结果、任务状态与系统提醒 & 被试者、实验员、管理员 \\
+\hline
+支持日志查询、审计与追踪 & 管理员、系统配置 \\
+\hline
+\end{longtable}

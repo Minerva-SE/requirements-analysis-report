@@ -16,6 +16,8 @@
 *.synctex.gz
 *.toc
 *.xdv
+*.pdf
+*.drawio*
 
 # Editor and OS files
 .DS_Store
