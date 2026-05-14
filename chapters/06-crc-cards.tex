@@ -1,10 +1,10 @@
 \section{CRC 卡}
 
-\subsection{Class 被试者}
+\subsection{Class Subject（被试者）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 注册、登录、退出 & 认证服务 \\
 \hline
@@ -18,11 +18,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 实验员}
+\subsection{Class Researcher（实验员）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 创建、查看、编辑实验 & 实验 \\
 \hline
@@ -40,11 +40,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 管理员}
+\subsection{Class Administrator（管理员）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 登录、退出后台管理系统 & 认证服务 \\
 \hline
@@ -62,11 +62,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 实验}
+\subsection{Class Experiment（实验）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 记录实验基本信息与状态流转 & 实验员、管理员 \\
 \hline
@@ -78,11 +78,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class EEG 数据}
+\subsection{Class EEGData（EEG 数据）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 保存原始文件路径、元信息和标签 & 文件存储、标签 \\
 \hline
@@ -96,11 +96,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 质控报告 / 处理结果}
+\subsection{Class QualityReport / ProcessingResult（质控报告 / 处理结果）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 记录格式检查、通道校验与异常值检查结果 & 数据解析、质控与处理任务 \\
 \hline
@@ -112,11 +112,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 数据使用申请 / 授权记录}
+\subsection{Class DataAccessRequest / AuthorizationRecord（数据使用申请 / 授权记录）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 保存实验员的数据使用申请 & 实验员 \\
 \hline
@@ -128,11 +128,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 知情同意}
+\subsection{Class ConsentRecord（知情同意）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 维护知情同意模板内容 & 管理员、系统配置 \\
 \hline
@@ -144,11 +144,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 分析任务 / 分析结果}
+\subsection{Class AnalysisTask / AnalysisResult（分析任务 / 分析结果）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 组织波形、统计、FFT、波段能量和 AI 分类任务 & 数据分析与 AI 模块 \\
 \hline
@@ -158,11 +158,11 @@
 \hline
 \end{longtable}
 
-\subsection{Class 通知 / 操作日志}
+\subsection{Class Notification / OperationLog（通知 / 操作日志）}
 
 \begin{longtable}{|p{84mm}|p{54mm}|}
 \hline
-\textbf{RESPONSIBILITY} & \textbf{COLLABORATOR} \\
+\textbf{职责} & \textbf{协作者} \\
 \hline
 记录关键操作、审批与异常事件 & 所有业务模块 \\
 \hline
